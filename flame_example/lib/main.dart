@@ -1,10 +1,11 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/flame.dart';
 import 'package:flame/component.dart';
 import 'package:flame/game.dart';
 
-const SPEED = 100.0;
+const SPEED = 250.0;
 const CRATE_SIZE = 128.0;
 
 void main() async {
@@ -18,9 +19,12 @@ void main() async {
   };
 }
 
+Random rnd = new Random();
+
 class MyGame extends Game {
   Size dimensions;
   List<Crate> crates = [];
+  double creationTimer = 0.0;
 
   MyGame(this.dimensions) {
     crates.add(crate(dimensions.width / 2));
@@ -30,15 +34,27 @@ class MyGame extends Game {
     Crate crate = new Crate();
     crate.x = x;
     crate.y = 200.0;
+    crate.angle = 0.0;
     return crate;
   }
+
   @override
   void render(Canvas canvas) {
-    crates.forEach((crate) => crate.render(canvas));
+    canvas.save();
+    crates.forEach((crate) {
+      crate.render(canvas);
+      canvas.restore();
+      canvas.save();
+    });
   }
 
   @override
   void update(double t) {
+    this.creationTimer += t;
+    if (this.creationTimer >= 1) {
+      this.creationTimer = 0.0;
+      this.newCrate();
+    }
     crates.forEach((crate) => crate.y += t * SPEED);
   }
 
@@ -49,6 +65,11 @@ class MyGame extends Game {
       var diff = CRATE_SIZE / 2;
       return (dx < diff && dy < diff);
     });
+  }
+
+  void newCrate() {
+    double x = CRATE_SIZE/2 + rnd.nextDouble() * (this.dimensions.width - CRATE_SIZE);
+    crates.add(crate(x));
   }
 }
 
