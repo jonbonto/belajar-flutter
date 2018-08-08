@@ -8,6 +8,8 @@ import 'package:flame/game.dart';
 const SPEED = 250.0;
 const CRATE_SIZE = 128.0;
 
+var points = 0;
+
 void main() async {
   Flame.util.enableEvents();
   Flame.audio.disableLog();
@@ -15,6 +17,9 @@ void main() async {
   Explosion.fetch();
 
   var dimensions = await Flame.util.initialDimensions();
+
+  // Flame.audio.loop('music.ogg');
+
   var game = new MyGame(dimensions)..start();
   window.onPointerDataPacket = (packet) {
     var pointer = packet.data.first;
@@ -35,10 +40,11 @@ class MyGame extends Game {
     crates.add(crate(dimensions.width / 2));
   }
 
-  static Crate crate(double x) {
+  Crate crate(double x) {
     Crate crate = new Crate();
     crate.x = x;
     crate.y = 200.0;
+    crate.maxY = this.dimensions.height;
     return crate;
   }
 
@@ -56,6 +62,13 @@ class MyGame extends Game {
       canvas.restore();
       canvas.save();
     });
+
+    String text = points.toString(); // text to render
+    ParagraphBuilder paragraph = new ParagraphBuilder(new ParagraphStyle());
+    paragraph.pushStyle(new TextStyle(color: new Color(0xFFFFFFFF), fontSize: 48.0, fontFamily: 'Halo'));
+    paragraph.addText(text);
+    var p = paragraph.build()..layout(new ParagraphConstraints(width: 180.0));
+    canvas.drawParagraph(p, new Offset(this.dimensions.width - p.width - 10, this.dimensions.height - p.height - 10));
   }
 
   @override
@@ -65,6 +78,14 @@ class MyGame extends Game {
       this.creationTimer = 0.0;
       this.newCrate();
     }
+    crates.removeWhere((crate) {
+      bool destroy = crate.destroy();
+      if (destroy) {
+        // Flame.audio.play('miss.mp3');
+        points -= 20;
+      }
+      return destroy;
+    });
     crates.forEach((crate) => crate.update(t));
     explosions.forEach((exp) => exp.update(t));
     explosions.removeWhere((exp) => exp.destroy());
@@ -78,6 +99,8 @@ class MyGame extends Game {
       var remove = (dx < diff && dy < diff);
       if (remove) {
         explosions.add(new Explosion(crate));
+        // Flame.audio.play('explosion.mp3');
+        points += 10;
       }
       return remove;
     });
@@ -91,6 +114,7 @@ class MyGame extends Game {
 }
 
 class Crate extends SpriteComponent {
+  double maxY;
   Crate() : super.square(CRATE_SIZE, 'crate.png') {
     this.angle = 0.0;
   }
@@ -98,6 +122,9 @@ class Crate extends SpriteComponent {
   @override
   void update(double t) {
     y += t * SPEED;
+  }
+  bool destroy() {
+    return y >= maxY + CRATE_SIZE / 2;
   }
 }
 

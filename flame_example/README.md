@@ -6,3 +6,6 @@ A new Flutter project.
 
 For help getting started with Flutter, view our online
 [documentation](https://flutter.io/).
+
+## Credits:
+  https://github.com/luanpotter/flame-example/blob/master/tutorial/article.md
