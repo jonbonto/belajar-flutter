@@ -12,7 +12,9 @@ void main() {
 class MyGame extends Game {
   @override
   void render(Canvas canvas) {
-    // TODO: implement render
+    var rect = new Rect.fromLTWH(10.0, 10.0, 100.0, 100.0);
+    var paint = new Paint()..color = new Color(0xFFFF0000);
+    canvas.drawRect(rect, paint);
   }
 
   @override
