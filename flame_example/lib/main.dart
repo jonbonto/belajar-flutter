@@ -14,6 +14,7 @@ void main()  async {
 class MyGame extends Game {
   Size dimensions;
   Crate crate;
+  static const SPEED = 100.0;
 
   MyGame(this.dimensions) {
     this.crate = new Crate();
@@ -27,7 +28,7 @@ class MyGame extends Game {
 
   @override
   void update(double t) {
-    // TODO: implement update
+    crate.y += t * SPEED;
   }
 
 }
