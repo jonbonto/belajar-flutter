@@ -18,7 +18,7 @@ void main() async {
 
   var dimensions = await Flame.util.initialDimensions();
 
-  // Flame.audio.loop('music.ogg');
+  Flame.audio.loop('music.ogg');
 
   var game = new MyGame(dimensions)..start();
   window.onPointerDataPacket = (packet) {
@@ -81,7 +81,7 @@ class MyGame extends Game {
     crates.removeWhere((crate) {
       bool destroy = crate.destroy();
       if (destroy) {
-        // Flame.audio.play('miss.mp3');
+        Flame.audio.play('miss.mp3');
         points -= 20;
       }
       return destroy;
@@ -99,7 +99,7 @@ class MyGame extends Game {
       var remove = (dx < diff && dy < diff);
       if (remove) {
         explosions.add(new Explosion(crate));
-        // Flame.audio.play('explosion.mp3');
+        Flame.audio.play('explosion.mp3');
         points += 10;
       }
       return remove;
